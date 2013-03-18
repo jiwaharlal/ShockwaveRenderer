@@ -1,6 +1,10 @@
 #pragma once
 
 #include <vector>
+/*#if defined _HAS_ITERATOR_DEBUGGING
+	#undef _HAS_ITERATOR_DEBUGGING
+	#define _HAS_ITERATOR_DEBUGGING 0
+#endif*/
 #include <list>
 
 #include "BasicDefs.h"

@@ -70,11 +70,11 @@ ShockwaveRenderer::renderShockwaves()
     HBITMAP editBitmap = CreateDIBSection(myTargetDc, &bi24BitInfo, DIB_RGB_COLORS, 0, 0, 0); // create a dib section for the dc
     SelectObject(myTargetDc, editBitmap); // assign the dib section to the dc
 
-	BitBlt(myTargetDc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, memDc, 0, 0, SRCCOPY);
+	//BitBlt(myTargetDc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, memDc, 0, 0, SRCCOPY);
 	
 	RGB *bitmapPixels = new RGB[bitmap.bmWidth * bitmap.bmHeight];
     
-	GetDIBits(myTargetDc, editBitmap, 0, bi24BitInfo.bmiHeader.biHeight, bitmapPixels, &bi24BitInfo, DIB_RGB_COLORS); // grab the pixels in the dc
+	GetDIBits(memDc, bmp, 0, bi24BitInfo.bmiHeader.biHeight, bitmapPixels, &bi24BitInfo, DIB_RGB_COLORS); // grab the pixels in the dc
 	RGB *originalPixels = new RGB[bitmap.bmWidth * bitmap.bmHeight];
 	memcpy(originalPixels, bitmapPixels, bitmap.bmWidth * bitmap.bmHeight * 3);
 

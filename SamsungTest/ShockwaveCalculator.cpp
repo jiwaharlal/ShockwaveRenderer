@@ -32,7 +32,6 @@ ShockwaveCalculator::ShockwaveCalculator(
 	, myImageWidth(aImageWidth)
 	, myIsMultithreaded(aIsMultithreaded)
 {
-	//myTasksMutex = CreateMutex(NULL, FALSE, NULL);
 	if (! myIsMultithreaded ) {
 		return;
 	}
@@ -51,7 +50,6 @@ ShockwaveCalculator::~ShockwaveCalculator(void)
 		TerminateThread(*it, 0);
 	}
 	MutexLock lock(myTaskListMutex.handle());
-	myTasks.push_back(CalculationTask(0, 0, Mutex()));
 }
 
 float waveFunc(float x, float amplitude) 
@@ -83,6 +81,7 @@ ShockwaveCalculator::calculateShockwave(
 	} else {
 		{
 			MutexLock listLock(myTaskListMutex.handle());
+			myTasks.clear();
 			for (int yLow = yMin, yHigh = yLow + 20; yHigh < yMax; yLow = yHigh, yHigh += 20) {
 				myTasks.push_back(CalculationTask(yLow, yHigh, Mutex()));
 			}
@@ -91,19 +90,19 @@ ShockwaveCalculator::calculateShockwave(
 		while(true) {
 			{
 				MutexLock listLock(myTaskListMutex.handle());
-				for (TaskStorage::iterator it = myTasks.begin(); it != myTasks.end(); ++it) {
+
+				TaskStorage::iterator it;
+				for (it = myTasks.begin(); it != myTasks.end(); ++it) {
 					if ( WaitForSingleObject(it->mutex.handle(), 0) != WAIT_OBJECT_0 ) {
 						continue;
 					}
+					ReleaseMutex(it->mutex.handle());
 					if ( it->isDone ) {
-						ReleaseMutex(it->mutex.handle());
 						it = myTasks.erase(it);
 						
 						if (it == myTasks.end()) {
 							break;
 						}
-					} else {
-						ReleaseMutex(it->mutex.handle());
 					}
 				}
 				if ( myTasks.empty() ) {
@@ -130,6 +129,7 @@ ShockwaveCalculator::workerThreadFunc()
 
 		{
 			MutexLock listLock(myTaskListMutex.handle());
+			
 			for (TaskStorage::iterator it = myTasks.begin(); it != myTasks.end(); ++it)
 			{
 				if (WaitForSingleObject(it->mutex.handle(), 0) != WAIT_OBJECT_0) {

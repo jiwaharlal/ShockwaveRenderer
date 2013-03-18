@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 
 	std::string bmpFileName;
 	if ( argc != 2 ) {
-		bmpFileName = "..\\img\\graph.bmp";
+		bmpFileName = "..\\img\\kiev_sat01.bmp";
 	} else {
 		bmpFileName = argv[1];
 	}
