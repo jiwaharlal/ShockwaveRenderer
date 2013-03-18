@@ -5,12 +5,12 @@
 class Mutex
 {
 public:
-	Mutex();
-	Mutex(const Mutex&);
-	~Mutex();
+				Mutex();
+				Mutex(const Mutex&);
+				~Mutex();
 
-	HANDLE handle();
+	HANDLE		handle() const;
 private:
-	HANDLE myMutex;
-	int* myCopyCounter;
+	HANDLE	myMutex;
+	int*	myCopyCounter;
 };

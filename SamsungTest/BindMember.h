@@ -41,17 +41,15 @@ template <class ValueType>
 class Functor {
 public:
 	Functor(AFunctor<ValueType>* aFunctorImpl) : myFunctorImpl(aFunctorImpl) {}
-	//Functor(const Functor& other) : myFunctorImpl(const_cast<Functor<ValueType>&>(other).myFunctorImpl.reset(NULL)) {}
 	~Functor() {}
 	void operator () (ValueType value) {
 		myFunctorImpl->Call(value);
 	}
 private:
-	//std::auto_ptr<AFunctor<ValueType> > myFunctorImpl;
 	koki::rl_ptr<AFunctor<ValueType> > myFunctorImpl;
 };
 
 template <class ClassType, class ValueType>
-Functor<ValueType> BindMember(ClassType* aObject, void (ClassType::*aFunc)(ValueType)) {
+Functor<ValueType> bindMember(ClassType* aObject, void (ClassType::*aFunc)(ValueType)) {
 	return Functor<ValueType>(new MemberFunctorImpl<ClassType, ValueType>(aObject, aFunc));
 }

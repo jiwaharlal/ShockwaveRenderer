@@ -5,8 +5,8 @@
 class MutexLock
 {
 public:
-	MutexLock(HANDLE aMutex);
-	~MutexLock();
+			MutexLock(HANDLE aMutex);
+			~MutexLock();
 private:
 	HANDLE myMutex;
 };

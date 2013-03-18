@@ -22,7 +22,8 @@ Mutex::~Mutex(void)
 	}
 }
 
-HANDLE Mutex::handle()
+HANDLE 
+Mutex::handle() const
 {
 	return myMutex;
 }

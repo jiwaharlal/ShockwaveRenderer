@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <list>
 
 #include "BasicDefs.h"
 #include "Mutex.h"
@@ -12,7 +13,7 @@ public:
 									RGB*			aResultPixels,
 									unsigned int	aImageHeight,
 									unsigned int	aImageWidth,
-									bool			aIsMultythreaded = false);
+									bool			aIsMultithreaded = false);
 				~ShockwaveCalculator();
 
 	void		calculateShockwave(	float			aAmplitude, 
@@ -22,29 +23,35 @@ public:
 private:
 	struct CalculationTask 
 	{
-		CalculationTask(ShockwaveCalculator* calc, int aYMin, int aYMax, Mutex* aMutex );
+		CalculationTask( int aYMin, int aYMax, const Mutex& aMutex );
 
-		ShockwaveCalculator*		calculator;
 		int							yMin;
 		int							yMax;
-		Mutex*						mutex;
+		Mutex						mutex;
+		bool						isDone;
 	};
 	RGB*				myOriginalPixels;
 	RGB*				myResultPixels;
 	unsigned int		myImageHeight;
 	unsigned int		myImageWidth;
-	//HANDLE				myTasksMutex;
-	typedef std::vector<Mutex> MutexStorage;
-	MutexStorage	myChunkMutexes;
-	bool			myIsMultythreaded;
 
-	float			myAmplitude;
-	float			myOutsideRadix;
-	int				myXCenter;
-	int				myYCenter;
-	float			myInsideRadix;
+	bool				myIsMultithreaded;
+
+	typedef std::vector<HANDLE> ThreadStorage;
+	ThreadStorage		myThreads;
+
+	typedef std::list<CalculationTask> TaskStorage;
+	TaskStorage			myTasks;
+	Mutex				myTaskListMutex;
+
+	float				myAmplitude;
+	float				myOutsideRadix;
+	int					myXCenter;
+	int					myYCenter;
+	float				myInsideRadix;
 
 	void					calculateForYRange( int				aYMin,
 												int				aYMax );
-	static DWORD WINAPI 	calculateChunckThread( LPVOID		aParam );
+	static DWORD WINAPI		workerThreadStart( LPVOID			aParam );
+	void					workerThreadFunc();
 };

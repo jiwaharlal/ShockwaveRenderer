@@ -6,43 +6,41 @@
 #include <exception>
 #include <Windows.h>
 
+#include "rl_ptr.h"
+#include "Mutex.h"
+
+class ShockwaveRenderer;
+
 class WindowException: public std::exception {};
 
-// Class encapsulates WIN API window creation and management of ModelEnvironment and thrown object
 class ModelWindow
 {
 	typedef std::map<HWND, ModelWindow*> WndStorage;
 public:
-	ModelWindow();
-	virtual ~ModelWindow(void);
+						ModelWindow(const std::string	aBmpFileName);
+	virtual				~ModelWindow(void);
 
-	virtual LRESULT wndProc(UINT Msg, WPARAM wParam, LPARAM lParam);
-
-	void loadBitmap(std::string aBmpFileName);
+	virtual LRESULT		wndProc(UINT					Msg, 
+								WPARAM					wParam, 
+								LPARAM					lParam);
 
 	HWND getHandle();
 
-	void setBitmapToDraw(HDC aDc, int aHeight, int aWidth);
-	void lockPaint();
-	void unlockPaint();
-	HANDLE getPaintMutex();
+	const Mutex&		getPaintMutex();
 private:
-	static WndStorage windows;
+	static WndStorage	windows;
 
-	HWND hWnd;
-	UINT_PTR timer;
-	HDC hdc;
-	HBITMAP myBmp;
-	HDC myDrawHdc;
-	int myDrawHeight;
-	int myDrawWidth;
-	HANDLE myPaintMutex;
+	HWND							hWnd;
+	HDC								myRenderDc;
+	Mutex							myPaintMutex;
+	koki::rl_ptr<ShockwaveRenderer> myRenderer;
 
+	void						invalidateRect(const RECT*	aRect);
 
-	static LRESULT CALLBACK clsWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-
-	void setTimer();
-	void killTimer();
+	static LRESULT CALLBACK		clsWndProc(HWND				hWnd, 
+											UINT			Msg, 
+											WPARAM			wParam, 
+											LPARAM			lParam);
 };
 
 #endif // API_WINDOW_H

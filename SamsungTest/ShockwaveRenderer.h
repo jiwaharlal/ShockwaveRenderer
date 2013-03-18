@@ -9,15 +9,18 @@ class ShockwaveRenderer
 {
 public:
 							ShockwaveRenderer(	const std::string&			aBmpFileName,
-												HDC							aTargetContext,
+												HDC							aTargetDc, //HWND						aTargetWindowHandle,
 												const Mutex&				aPaintMutex,
-												const Functor<const RECT&>	aIvalidationCallback);
+												const Functor<const RECT*>	aIvalidationCallback);
 							~ShockwaveRenderer();
+
+	void					switchMultithreading();
 private:
-	Functor<const RECT&>	myInvalidationCallback;
+	Functor<const RECT*>	myInvalidationCallback;
 	std::string				myBmpFileName;
-	HDC						myTargetContext;
+	HDC						myTargetDc;
 	Mutex					myPaintMutex;
+	bool					myIsMultithreading;
 
 	static DWORD WINAPI		renderThread(LPVOID aParam);
 	void					renderShockwaves();

@@ -9,6 +9,7 @@ Settings::Settings(void)
 	myMaxRadix = atoi(getValue("maxRadix").c_str());
 	myWaveSpeed = atoi(getValue("waveSpeed").c_str());
 	myRadixAmplitudeRatio = static_cast<float>(atof(getValue("radixAmplitudeRatio").c_str()));
+	myThreadCount = atoi(getValue("threadCount").c_str());
 }
 
 Settings::~Settings(void)
@@ -23,24 +24,34 @@ Settings::instance()
 	return s;
 }
 
-int	Settings::getMaxRadix() const 
+int	
+Settings::getMaxRadix() const 
 {
 	return myMaxRadix;
 }
 
-int	Settings::getMinRadix() const 
+int	
+Settings::getMinRadix() const 
 {
 	return myMinRadix;
 }
 
-int Settings::getWaveSpeed() const
+int 
+Settings::getWaveSpeed() const
 {
 	return myWaveSpeed;
 }
 
-float Settings::getRadixAmplitudeRatio() const
+float 
+Settings::getRadixAmplitudeRatio() const
 {
 	return myRadixAmplitudeRatio;
+}
+
+int 
+Settings::getThreadCount() const
+{
+	return myThreadCount;
 }
 
 std::string 
