@@ -8,6 +8,7 @@
 #include "MutexLock.h"
 #include "ModelClock.h"
 #include "Settings.h"
+#include "Bitmap.h"
 
 #ifndef max
 #define max(x, y) std::max(x, y);
@@ -21,15 +22,11 @@ ShockwaveCalculator::CalculationTask::CalculationTask( int aYMin, int aYMax, con
 {}
 
 ShockwaveCalculator::ShockwaveCalculator(
-	RGB*			aOriginalPixels,
-	RGB*			aResultPixels,
-	unsigned int	aImageHeight,
-	unsigned int	aImageWidth,
-	bool			aIsMultithreaded /*= false*/ )
-	: myOriginalPixels(aOriginalPixels)
-	, myResultPixels(aResultPixels)
-	, myImageHeight(aImageHeight)
-	, myImageWidth(aImageWidth)
+	SHARED_PTR(Bitmap)	aSrcBitmap,
+	SHARED_PTR(Bitmap)	aDestBitmap,
+	bool				aIsMultithreaded /*= false*/ )
+	: mySrcBitmap(aSrcBitmap)
+	, myDestBitmap(aDestBitmap)
 	, myIsMultithreaded(aIsMultithreaded)
 {
 	if (! myIsMultithreaded ) {
@@ -59,10 +56,10 @@ float waveFunc(float x, float amplitude)
 
 void 
 ShockwaveCalculator::calculateShockwave(
-	float			aAmplitude, 
-	float			aOutsideRadix,
-	unsigned int	aXCenter,
-	unsigned int	aYCenter )
+	float				aAmplitude,
+	float				aOutsideRadix,
+	unsigned int		aXCenter,
+	unsigned int		aYCenter )
 {
 	myAmplitude = aAmplitude;
 	myOutsideRadix = aOutsideRadix;
@@ -169,9 +166,10 @@ ShockwaveCalculator::calculateForYRange(
 				continue;
 			}
 			int col = myXCenter + dx;
-			int offset = (row * myImageWidth + col);
+			//int offset = (row * myImageWidth + col);
 			if ( pointR < insideRadix ) {
-				myResultPixels[offset] = myOriginalPixels[offset];
+				//myResultPixels[offset] = myOriginalPixels[offset];
+				myDestBitmap->setPixel(col, row, mySrcBitmap->getPixel(col, row));
 				continue;
 			}
 			if (dx == 0 && dy == 0) {
@@ -198,11 +196,11 @@ ShockwaveCalculator::calculateForYRange(
 			int srcX = col - (int)((float)(col - myXCenter) / pointR * distance);
 			int srcY = row - (int)((float)(row - myYCenter) / pointR * distance);
 
-			int srcOffset = (srcY * myImageWidth + srcX);
-			myResultPixels[offset] = myOriginalPixels[srcOffset];
+			//int srcOffset = (srcY * myImageWidth + srcX);
+			//myResultPixels[offset] = myOriginalPixels[srcOffset];
+			myDestBitmap->setPixel(col, row, mySrcBitmap->getPixel(srcX, srcY));
 		}
 	}
 
-	//Sleep(100000);
 	return;
 }

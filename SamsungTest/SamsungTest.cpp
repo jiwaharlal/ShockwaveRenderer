@@ -20,6 +20,8 @@ int main(int argc, char* argv[])
 {
 	MSG        Msg;
 
+	ASSERT(true, "Assertion test");
+
 	std::string bmpFileName;
 	if ( argc != 2 ) {
 		bmpFileName = "..\\img\\kiev_sat01.bmp";

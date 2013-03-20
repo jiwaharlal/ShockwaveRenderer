@@ -10,14 +10,16 @@
 #include "BasicDefs.h"
 #include "Mutex.h"
 
+//namespace sw {
+
+class Bitmap;
+
 class ShockwaveCalculator
 {
 public:
-				ShockwaveCalculator(RGB*			aOriginalPixels,
-									RGB*			aResultPixels,
-									unsigned int	aImageHeight,
-									unsigned int	aImageWidth,
-									bool			aIsMultithreaded = false);
+				ShockwaveCalculator(SHARED_PTR(Bitmap)	aSrcBitmap,
+									SHARED_PTR(Bitmap)	aDestBitmap,
+									bool				aIsMultithreaded = false);
 				~ShockwaveCalculator();
 
 	void		calculateShockwave(	float			aAmplitude, 
@@ -34,10 +36,15 @@ private:
 		Mutex						mutex;
 		bool						isDone;
 	};
-	RGB*				myOriginalPixels;
+
+	SHARED_PTR(Bitmap)	mySrcBitmap;
+	SHARED_PTR(Bitmap)	myDestBitmap;
+
+	/*RGB*				myOriginalPixels;
 	RGB*				myResultPixels;
 	unsigned int		myImageHeight;
 	unsigned int		myImageWidth;
+	*/
 
 	bool				myIsMultithreaded;
 
@@ -59,3 +66,5 @@ private:
 	static DWORD WINAPI		workerThreadStart( LPVOID			aParam );
 	void					workerThreadFunc();
 };
+
+//}
