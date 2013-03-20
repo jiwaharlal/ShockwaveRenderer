@@ -54,7 +54,7 @@ AnimatedSprite::isFinished()
 }
 
 void
-AnimatedSprite::drawTo(
+AnimatedSprite::render(
 	SHARED_PTR(Bitmap)	aTargetBitmap,
 	int					aX,
 	int					aY)

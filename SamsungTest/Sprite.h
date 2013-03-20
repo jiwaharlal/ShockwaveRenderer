@@ -20,7 +20,7 @@ public:
 
 	bool	isFinished();
 
-	void	drawTo(SHARED_PTR(Bitmap)	aTargetBitmap,
+	void	render(SHARED_PTR(Bitmap)	aTargetBitmap,
 					int					aX,
 					int					aY);
 private:

@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Comctl32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -206,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SettingsDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Shockwave.cpp"
 				>
 			</File>
@@ -264,11 +269,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\rl_ptr.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Settings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SettingsDialog.h"
 				>
 			</File>
 			<File
@@ -308,6 +321,10 @@
 		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\resource"
 			>
 		</File>
 	</Files>

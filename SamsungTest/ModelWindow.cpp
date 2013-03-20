@@ -3,11 +3,13 @@
 
 #include "BindMember.h"
 #include "ShockwaveRenderer.h"
+#include "SettingsDialog.h"
 
 ModelWindow::WndStorage ModelWindow::windows;
 
 ModelWindow::ModelWindow(const std::string	aBmpFileName) 
 	: myRenderDc(NULL)
+	//, mySettingsDlg(new SettingsDialog())
 {	
 	WNDCLASSEX WndClsEx;
 	LPCTSTR ClsName = L"SamsungTest";
@@ -61,6 +63,7 @@ ModelWindow::ModelWindow(const std::string	aBmpFileName)
 														myRenderDc, //hWnd,
 														myPaintMutex, 
 														bindMember(this, &ModelWindow::invalidateRect)));
+	mySettingsDlg = SHARED_PTR(SettingsDialog)(new SettingsDialog(hWnd));
 	
 }
 
@@ -102,6 +105,9 @@ LRESULT ModelWindow::wndProc(UINT Msg, WPARAM wParam, LPARAM lParam) {
 	case WM_LBUTTONUP:
 		myRenderer->switchMultithreading();
 		
+		break;
+	case WM_RBUTTONUP:
+		mySettingsDlg->Show();
 		break;
     case WM_DESTROY:
         PostQuitMessage(WM_QUIT);

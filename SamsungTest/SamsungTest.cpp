@@ -16,6 +16,7 @@
 
 using namespace std;
 
+//int WINAPI WinMain(HINSTANCE hInst, HINSTANCE h0, LPTSTR lpCmdLine, int nCmdShow)
 int main(int argc, char* argv[])
 {
 	MSG        Msg;
@@ -23,11 +24,11 @@ int main(int argc, char* argv[])
 	ASSERT(true, "Assertion test");
 
 	std::string bmpFileName;
-	if ( argc != 2 ) {
+	//if ( argc != 2 ) {
 		bmpFileName = "..\\img\\kiev_sat01.bmp";
-	} else {
+	/*} else {
 		bmpFileName = argv[1];
-	}
+	}*/
 
 	ModelWindow wnd(bmpFileName);
 	

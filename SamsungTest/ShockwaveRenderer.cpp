@@ -57,7 +57,7 @@ ShockwaveRenderer::renderShockwaves()
 
 	myInvalidationCallback(NULL);
 
-	SHARED_PTR(Bitmap) destBitmap(new Bitmap(*srcBitmap));
+	SHARED_PTR(Bitmap) destBitmap(new Bitmap(myBmpFileName));
 
 	while (true) {
 		ShockwaveCalculator calculator(srcBitmap, destBitmap, myIsMultithreading); //(originalPixels, bitmapPixels, bitmap.bmHeight, bitmap.bmWidth, myIsMultithreading);
@@ -111,7 +111,7 @@ ShockwaveRenderer::renderShockwaves()
 			double calculationBegin = clock.getTime();
 			calculator.calculateShockwave(amplitude, outsideRadixFloat, x0, y0);
 			if (! sprite.isFinished() ) {
-				sprite.drawTo(destBitmap, x0, y0);
+				sprite.render(destBitmap, x0, y0);
 			}
 			
 			double calculationEnd = clock.getTime();
@@ -120,7 +120,6 @@ ShockwaveRenderer::renderShockwaves()
 			int bmpHeight = destBitmap->getHeight();
 			{
 				MutexLock lock(myPaintMutex.handle());
-				//SetDIBitsToDevice(myTargetDc, xStart, bitmap.bmHeight - yFinish, xFinish - xStart, yFinish - yStart, xStart, yStart, 0, bitmap.bmHeight, bitmapPixels, &bi24BitInfo, DIB_RGB_COLORS); // set the new dibs to the dc
 				
 				destBitmap->copyPixelsToDevice(myTargetDc, xStart, bmpHeight - yFinish, xFinish - xStart, yFinish - yStart, xStart, yStart);
 			}
@@ -133,15 +132,11 @@ ShockwaveRenderer::renderShockwaves()
 			myInvalidationCallback(&r);
 
 			double frameEndTime = clock.getTime();
-			if ((frameEndTime - frameStartTime) < 0.05) {
-				//Sleep(10);
-			}
 			prevFrameTime = frameTime;
 		}
 		double endTime = clock.getTime();
 		double framesPerSecond = static_cast<double>(frameCounter) / (endTime - blastTime);
 		printf("FPS: %f, max frame time: %f, max calc time: %f\n\r", framesPerSecond, maxFrameTime, maxCalculationTime);
-		//Sleep(2000);
 	}
 }
 
