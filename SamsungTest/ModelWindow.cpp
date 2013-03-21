@@ -64,7 +64,6 @@ ModelWindow::ModelWindow(const std::string	aBmpFileName)
 														myPaintMutex, 
 														bindMember(this, &ModelWindow::invalidateRect)));
 	mySettingsDlg = SHARED_PTR(SettingsDialog)(new SettingsDialog(hWnd));
-	
 }
 
 ModelWindow::~ModelWindow(void)
@@ -102,12 +101,12 @@ LRESULT CALLBACK  ModelWindow::clsWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LP
 LRESULT ModelWindow::wndProc(UINT Msg, WPARAM wParam, LPARAM lParam) {
     switch(Msg)
     {
-	case WM_LBUTTONUP:
+	/*case WM_LBUTTONUP:
 		myRenderer->switchMultithreading();
 		
-		break;
+		break;*/
 	case WM_RBUTTONUP:
-		mySettingsDlg->Show();
+		mySettingsDlg->show();
 		break;
     case WM_DESTROY:
         PostQuitMessage(WM_QUIT);

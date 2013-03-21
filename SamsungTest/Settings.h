@@ -5,22 +5,36 @@
 class Settings
 {
 public:
-	static const Settings& instance();
+	static Settings& instance();
 
-	int				getMaxRadix() const;
-	int				getMinRadix() const;
+	int				getMaxRadius() const;
+	void			setMaxRadius(int aValue);
+	int				getMinRadius() const;
+	void			setMinRadius(int aValue);
 	int				getWaveSpeed() const;
-	float			getRadixAmplitudeRatio() const;
+	void			setWaveSpeed(int aValue);
+	float			getRadiusAmplitudeRatio() const;
+	void			setRadiusAmplitudeRatio(float aValue);
 	int				getThreadCount() const;
+	void			setThreadCount(int aValue);
+	bool			isBlastsParallel() const;
+	void			setIsBlastsParallel(bool aValue);
+	bool			isMultithreaded() const;
+	void			setIsMultithreaded(bool aValue);
+
+	void			saveSettings();
 private:
-	int			myMaxRadix;
-	int			myMinRadix;
+	int			myMaxRadius;
+	int			myMinRadius;
 	int			myWaveSpeed;
-	float		myRadixAmplitudeRatio;
+	float		myRadiusAmplitudeRatio;
 	int			myThreadCount;
+	bool		myIsBlastsParallel;
+	bool		myIsMultithreaded;
 
 						Settings();
 						~Settings();
 
 	std::string			getValue(const char* aKey);
+	void				saveValue(const char* aKey, const char* aValue);
 };

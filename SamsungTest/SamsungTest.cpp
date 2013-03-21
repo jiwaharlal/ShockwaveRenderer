@@ -13,29 +13,30 @@
 #include "ModelClock.h"
 #include "BasicDefs.h"
 #include "MutexLock.h"
+#include "SettingsDialog.h"
 
 using namespace std;
 
-//int WINAPI WinMain(HINSTANCE hInst, HINSTANCE h0, LPTSTR lpCmdLine, int nCmdShow)
 int main(int argc, char* argv[])
 {
-	MSG        Msg;
-
-	ASSERT(true, "Assertion test");
+	MSG        msg;
 
 	std::string bmpFileName;
-	//if ( argc != 2 ) {
+	if ( argc != 2 ) {
 		bmpFileName = "..\\img\\kiev_sat01.bmp";
-	/*} else {
+	} else {
 		bmpFileName = argv[1];
-	}*/
+	}
 
 	ModelWindow wnd(bmpFileName);
 	
-	while( GetMessage(&Msg, NULL, 0, 0) )
+	while( GetMessage(&msg, NULL, 0, 0) )
 	{
-        TranslateMessage(&Msg);
-        DispatchMessage(&Msg);
+		if(!IsDialogMessage(SettingsDialog::getCurrent(),&msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 	}
 
 	return 0;

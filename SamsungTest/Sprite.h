@@ -20,9 +20,16 @@ public:
 
 	bool	isFinished();
 
-	void	render(SHARED_PTR(Bitmap)	aTargetBitmap,
-					int					aX,
-					int					aY);
+	void	render(SHARED_PTR(Bitmap)				aTargetBitmap,
+					int								aX,
+					int								aY,
+					RECT&							aOutRedrawRect);
+	void	erasePreviousFrame(SHARED_PTR(Bitmap)	aSrcBitmap,
+								SHARED_PTR(Bitmap)	aDestBitmap,
+								int					aX,
+								int					aY,
+								RECT&				aOutRedrawRect);
+	float	getDuration();
 private:
 	SHARED_PTR(Bitmap)		myBitmap;
 	//RGB*					myBitmapPixels;
@@ -46,6 +53,9 @@ private:
 	POINT	getFrameXY(int				aFrameIndex);
 	int		getCurrentFrameIndex();
 	int		getFrameCount();
+	void	defineRedrawRect(int		aX,
+							int			aY,
+							RECT&		oOutRedrawRect);
 };
 
 //}

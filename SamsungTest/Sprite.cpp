@@ -34,6 +34,12 @@ AnimatedSprite::startAnimation()
 	myStartTime = myClock.getTime();
 }
 
+float
+AnimatedSprite::getDuration()
+{
+	return static_cast<float>(static_cast<double>(getFrameCount()) * myFrameDuration);
+}
+
 int
 AnimatedSprite::getCurrentFrameIndex()
 {
@@ -57,9 +63,14 @@ void
 AnimatedSprite::render(
 	SHARED_PTR(Bitmap)	aTargetBitmap,
 	int					aX,
-	int					aY)
+	int					aY,
+	RECT&				aOutRedrawRect)
 {
 	int frameIndex = getCurrentFrameIndex();
+	if (frameIndex >= getFrameCount()) {
+		return;
+	}
+	ASSERT(frameIndex < getFrameCount(), "Frame out of sprite bounds");
 	int framesPerRow = myBitmap->getWidth() / myFrameWidth;
 	int frameRow = frameIndex / framesPerRow;
 	int frameCol = frameIndex % framesPerRow;
@@ -74,11 +85,64 @@ AnimatedSprite::render(
 			if (pixel.Red + pixel.Green + pixel.Blue < 150) {
 				continue;
 			}
-			//int targetOffset = (aY + row - myBaseY) * aImageWidth + aX + col - myBaseX;
 			aTargetBitmap->setPixel(aX + col - myBaseX, aY + row - myBaseY, pixel);
-			//aBitmapPixels[targetOffset] = pixel;
 		}
 	}
+
+	defineRedrawRect(aX, aY, aOutRedrawRect);
+}
+
+void
+AnimatedSprite::defineRedrawRect(
+	int			aX,
+	int			aY,
+	RECT&		aOutRedrawRect)
+{
+	aOutRedrawRect.left = aX - (myFrameWidth - myBaseX);
+	aOutRedrawRect.right = aX + (myFrameWidth - myBaseX);
+	aOutRedrawRect.bottom = aY - (myFrameHeight - myBaseY);
+	aOutRedrawRect.top = aY + (myFrameHeight - myBaseY);
+}
+
+void
+AnimatedSprite::erasePreviousFrame(
+	SHARED_PTR(Bitmap)	aSrcBitmap,
+	SHARED_PTR(Bitmap)	aDestBitmap,
+	int					aX,
+	int					aY,
+	RECT&				aOutRedrawRect)
+{
+	int frameIndex = getCurrentFrameIndex();
+	if (frameIndex == 0) {
+		return;
+	}
+	frameIndex -= 1;
+	int framesPerRow = myBitmap->getWidth() / myFrameWidth;
+	int frameRow = frameIndex / framesPerRow;
+	int frameCol = frameIndex % framesPerRow;
+	int leftBottomX = frameCol * myFrameWidth;
+	int leftBottomY = myBitmap->getHeight() - (frameRow + 1) * myFrameHeight;
+
+	for (int row = 0; row < myFrameHeight; row++)
+	{
+		for (int col = 0; col < myFrameWidth; col++)
+		{
+			const RGB& spritePixel = myBitmap->getPixel(leftBottomX + col, leftBottomY + row);
+			if (spritePixel.Red + spritePixel.Green + spritePixel.Blue < 150) 
+			{
+				continue;
+			}
+			int x = aX + col - myBaseX;
+			int y = aY + row - myBaseY;
+			//const RGB& prevPixel = aDestBitmap->getPixel(x, y);
+			//if (spritePixel == prevPixel) 
+			//{
+				aDestBitmap->setPixel(x, y, aSrcBitmap->getPixel(x, y));
+			//}
+		}
+	}
+
+	defineRedrawRect(aX, aY, aOutRedrawRect);
 }
 
 //}

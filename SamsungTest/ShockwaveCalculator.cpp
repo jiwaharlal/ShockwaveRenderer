@@ -23,12 +23,11 @@ ShockwaveCalculator::CalculationTask::CalculationTask( int aYMin, int aYMax, con
 
 ShockwaveCalculator::ShockwaveCalculator(
 	SHARED_PTR(Bitmap)	aSrcBitmap,
-	SHARED_PTR(Bitmap)	aDestBitmap,
-	bool				aIsMultithreaded /*= false*/ )
+	SHARED_PTR(Bitmap)	aDestBitmap )
 	: mySrcBitmap(aSrcBitmap)
 	, myDestBitmap(aDestBitmap)
-	, myIsMultithreaded(aIsMultithreaded)
 {
+	myIsMultithreaded = Settings::instance().isMultithreaded();
 	if (! myIsMultithreaded ) {
 		return;
 	}

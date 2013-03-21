@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Blast.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ModelClock.cpp"
 				>
 			</File>
@@ -250,6 +254,10 @@
 			</File>
 			<File
 				RelativePath=".\BitmapProvider.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Blast.h"
 				>
 			</File>
 			<File

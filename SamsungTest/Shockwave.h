@@ -9,21 +9,28 @@ class Bitmap;
 class Shockwave
 {
 public:
-					Shockwave(	int aSpreadRadius,
-								int aCenterX,
-								int aCenterY);
+					Shockwave(	SHARED_PTR(Bitmap)	aSrcBitmap,
+								SHARED_PTR(Bitmap)	aDestBitmap,
+								int					aSpreadRadius,
+								int					aCenterX,
+								int					aCenterY );
 					~Shockwave();
 
 	void			startAnimation();
 	bool			isFinished();
-	void			render(	SHARED_PTR(Bitmap)	aSrcBitmap,
-							SHARED_PTR(Bitmap)	aDestBitmap );
+	void			render(	RECT&					aOutUpdateRect );
+	float			getDuration();
 private:
 	float				mySpreadRadius;
 	int					myCenterX;
 	int					myCenterY;
 	SystemTimerClock	myClock;
 	double				myStartTime;
+	bool				myAnimationFinished;
+	int					myWaveSpeed;
+	float				myRadiusAmplitudeRatio;
+	SHARED_PTR(Bitmap)	mySrcBitmap;
+	SHARED_PTR(Bitmap)	myDestBitmap;
 
 	SHARED_PTR(ShockwaveCalculator)	myCalculator;
 };
