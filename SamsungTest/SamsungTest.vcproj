@@ -234,6 +234,14 @@
 				RelativePath=".\stdafx.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\WorkerPool.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WorkingThread.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -314,6 +322,14 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WorkerPool.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WorkingThread.h"
 				>
 			</File>
 		</Filter>

@@ -58,20 +58,6 @@ Bitmap::setPixel(int aX, int aY, const RGB& aValue)
 	myPixels[aY * myWidth + aX] = aValue;
 }
 
-const Bitmap::LineProxyConst	
-Bitmap::operator [](int aRow) const
-{
-	ASSERT(aRow < myHeight, "Out of bitmap boudaries");
-	return LineProxyConst(&myPixels[aRow * myHeight]);
-}
-
-Bitmap::LineProxy			
-Bitmap::operator [](int aRow)
-{
-	ASSERT(aRow < myHeight, "Out of bitmap boudaries");
-	return LineProxy(&myPixels[aRow * myHeight]);
-}
-
 RGB*
 Bitmap::getPixels()
 {
@@ -107,7 +93,6 @@ Bitmap::copyPixelsToDevice(
 		aWidth = myWidth;
 	}
 
-	//HBITMAP editBitmap = CreateDIBSection(aTargetDc, &myBitmapInfo, DIB_RGB_COLORS, 0, 0, 0); // create a dib section for the dc
     SelectObject(aTargetDc, myBmp); // assign the dib section to the dc
 
 	SetDIBitsToDevice(	aTargetDc, 
@@ -121,9 +106,7 @@ Bitmap::copyPixelsToDevice(
 						myHeight, 
 						&myPixels[0], 
 						&myBitmapInfo, 
-						DIB_RGB_COLORS); // set the new dibs to the dc
-
-	//DeleteObject(editBitmap);
+						DIB_RGB_COLORS);
 }
 
 //}

@@ -152,7 +152,6 @@ ShockwaveRenderer::renderShockwaves()
 			//destBitmap->copyPixelsToDevice(myTargetDc, xStart, bmpHeight - yFinish, xFinish - xStart, yFinish - yStart, xStart, yStart);
 		}
 
-		//RECT r;
 		r.left = redrawRect.left;
 		r.top = bmpHeight - redrawRect.top;
 		r.right = redrawRect.right;
