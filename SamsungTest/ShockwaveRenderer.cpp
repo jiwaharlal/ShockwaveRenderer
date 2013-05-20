@@ -102,8 +102,6 @@ ShockwaveRenderer::renderShockwaves()
 			}
 		}
 
-
-
 		BlastStorage::iterator it = blasts.begin();
 		RECT redrawRect;
 		redrawRect.left = srcBitmap->getWidth();

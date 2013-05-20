@@ -13,7 +13,7 @@
 #include "ModelClock.h"
 #include "BasicDefs.h"
 #include "MutexLock.h"
-#include "SettingsDialog.h"
+//#include "SettingsDialog.h"
 
 using namespace std;
 
@@ -32,11 +32,11 @@ int main(int argc, char* argv[])
 	
 	while( GetMessage(&msg, NULL, 0, 0) )
 	{
-		if(!IsDialogMessage(SettingsDialog::getCurrent(),&msg))
-		{
+		/*if(!IsDialogMessage(SettingsDialog::getCurrent(),&msg))
+		{*/
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-		}
+		//}
 	}
 
 	return 0;

@@ -6,8 +6,10 @@
 #include <condition_variable>
 #include <vector>
 
-using namespace std;
+#include "include/ThreadPool.h"
 
+using namespace std;
+/*
 class Job
 {
 public:
@@ -114,7 +116,7 @@ private:
     mutex myJobsMutex;
     bool myWorking;
 };
-
+*/
 void sleep(int aSeconds)
 {
     cout << "Sleep for a " << aSeconds << " seconds" << endl;
@@ -163,7 +165,9 @@ public:
         {
             myData[i] = aValue;
         }
-    }
+
+        this_thread::sleep_for(chrono::seconds(1));
+   }
 
     void printData();
 private:
