@@ -158,5 +158,4 @@ ShockwaveRenderer::renderShockwaves()
 
 		//myInvalidationCallback(NULL);
 	}
-
 }

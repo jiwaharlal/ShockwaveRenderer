@@ -28,7 +28,7 @@ public:
                             ThreadPool(
                                 int aThreadCount);
 
-                            //~ThreadPool();
+                            ~ThreadPool();
 
     std::shared_ptr<Job>    addJob(
                                 const std::function<void()>&      aJobFunction);

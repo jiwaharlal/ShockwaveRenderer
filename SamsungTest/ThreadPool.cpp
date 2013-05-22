@@ -41,11 +41,11 @@ ThreadPool::ThreadPool(
     }
 }
 
-/*ThreadPool::~ThreadPool()
+ThreadPool::~ThreadPool()
 {
-    //cout << "In threadPool destructor" << endl;
-    //instance().stop();
-}*/
+    cout << "In threadPool destructor" << endl;
+    instance().stop();
+}
 
 shared_ptr<Job>
 ThreadPool::addJob(
@@ -68,23 +68,20 @@ ThreadPool::instance()
 void
 ThreadPool::stop()
 {
-	/*{
+	{
 		std::lock_guard<std::mutex> lk(myJobsMutex);
-		for (auto& t: myThreads)
-		{
-			myWorking = false;
-			myJobPresentCondition.notify_all();
-		}
+		myWorking = false;
 	}
+	myJobPresentCondition.notify_all();
 	for (auto& t: myThreads)
 	{
         t.join();
-	}*/
+	}
 }
 
 void
 ThreadPool::threadFunctionStatic(
-    int                aThreadId)
+    int					aThreadId)
 {
     instance().threadFunction(aThreadId);
 }
@@ -99,7 +96,7 @@ ThreadPool::threadFunction(
         myJobPresentCondition.wait(lk, [&]{return !myJobs.empty() || !myWorking;});
         if ( !myWorking )
         {
-            //cout << "Stopping thread " << aThreadId << endl;
+            cout << "Stopping thread " << aThreadId << endl;
             return;
         }
         shared_ptr<Job> currentJob = myJobs.front();
