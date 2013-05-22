@@ -28,7 +28,7 @@ public:
                             ThreadPool(
                                 int aThreadCount);
 
-                            ~ThreadPool();
+                            //~ThreadPool();
 
     std::shared_ptr<Job>    addJob(
                                 const std::function<void()>&      aJobFunction);
@@ -45,6 +45,8 @@ private:
     std::condition_variable             myJobPresentCondition;
     std::mutex                          myJobsMutex;
     bool                                myWorking;
+
+	bool								myAddJobFlag;
 };
 
 #endif // THREADPOOL_H

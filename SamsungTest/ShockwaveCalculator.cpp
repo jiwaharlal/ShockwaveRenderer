@@ -4,11 +4,13 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <memory>
 
 #include "MutexLock.h"
 #include "ModelClock.h"
 #include "Settings.h"
 #include "Bitmap.h"
+#include "ThreadPool.h"
 
 #ifndef max
 #define max(x, y) std::max(x, y);
@@ -28,9 +30,9 @@ ShockwaveCalculator::ShockwaveCalculator(
 	, myDestBitmap(aDestBitmap)
 {
 	myIsMultithreaded = Settings::instance().isMultithreaded();
-	if (! myIsMultithreaded ) {
+	//if (! myIsMultithreaded ) {
 		return;
-	}
+	//}
 	int threadCount = Settings::instance().getThreadCount();
 	for (int i = 0; i < threadCount; i++) {
 		myThreads.push_back(CreateThread(NULL, 0, workerThreadStart, this, 0, NULL));
@@ -75,7 +77,19 @@ ShockwaveCalculator::calculateShockwave(
 	if (! myIsMultithreaded) {
 		calculateForYRange(yMin, yMax);
 	} else {
+		std::list<std::shared_ptr<Job> > jobs;
+
+		for (int yLow = yMin, yHigh = yLow + 20; yHigh < yMax; yLow = yHigh, yHigh += 20) {
+			jobs.push_back(ThreadPool::instance().addJob(std::bind(&ShockwaveCalculator::calculateForYRange, this, yLow, yHigh)));
+			//myTasks.push_back(CalculationTask(yLow, yHigh, Mutex()));
+		}
+
+		for (auto& j: jobs)
 		{
+			j->waitForCompletion();
+		}
+
+		/*{
 			MutexLock listLock(myTaskListMutex.handle());
 			myTasks.clear();
 			for (int yLow = yMin, yHigh = yLow + 20; yHigh < yMax; yLow = yHigh, yHigh += 20) {
@@ -105,7 +119,7 @@ ShockwaveCalculator::calculateShockwave(
 					break;
 				}
 			}
-		}
+		}*/
 	}
 }
 

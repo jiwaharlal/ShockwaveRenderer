@@ -24,7 +24,8 @@ Job::waitForCompletion()
 void
 Job::execute()
 {
-    myFunction();
+	std::lock_guard<std::mutex> lk(myMutex);
+	myFunction();
     myIsDone = true;
     myCV.notify_all();
 }
@@ -33,17 +34,18 @@ ThreadPool::ThreadPool(
    int              aThreadCount)
 {
     myWorking = true;
+	myAddJobFlag = false;
     for (int i = 0; i < aThreadCount; i++)
     {
         myThreads.emplace_back(threadFunctionStatic, i);
     }
 }
 
-ThreadPool::~ThreadPool()
+/*ThreadPool::~ThreadPool()
 {
     //cout << "In threadPool destructor" << endl;
-    instance().stop();
-}
+    //instance().stop();
+}*/
 
 shared_ptr<Job>
 ThreadPool::addJob(
@@ -51,14 +53,14 @@ ThreadPool::addJob(
 {
     std::lock_guard<std::mutex> lk(myJobsMutex);
     myJobs.emplace_back(new Job(aJobFunction));
-    myJobPresentCondition.notify_one();
+    myJobPresentCondition.notify_all();
     return myJobs.back();
 }
 
 ThreadPool&
 ThreadPool::instance()
 {
-    static ThreadPool instance(5);
+    static ThreadPool instance(8);
 
     return instance;
 }
@@ -66,12 +68,18 @@ ThreadPool::instance()
 void
 ThreadPool::stop()
 {
-    for (auto& t: myThreads)
-    {
-        myWorking = false;
-        myJobPresentCondition.notify_all();
+	/*{
+		std::lock_guard<std::mutex> lk(myJobsMutex);
+		for (auto& t: myThreads)
+		{
+			myWorking = false;
+			myJobPresentCondition.notify_all();
+		}
+	}
+	for (auto& t: myThreads)
+	{
         t.join();
-    }
+	}*/
 }
 
 void
@@ -97,7 +105,7 @@ ThreadPool::threadFunction(
         shared_ptr<Job> currentJob = myJobs.front();
         myJobs.pop_front();
         lk.unlock();
-
+		myJobPresentCondition.notify_all();
         //cout << "Thread " << aThreadId << ", starting task" << endl;
         currentJob->execute();
         //cout << "Thread " << aThreadId << " finished task" << endl;

@@ -3,7 +3,7 @@
 
 #include "BindMember.h"
 #include "ShockwaveRenderer.h"
-/*#include "SettingsDialog.h"*/
+#include "SettingsDialog.h"
 
 ModelWindow::WndStorage ModelWindow::windows;
 
@@ -63,7 +63,7 @@ ModelWindow::ModelWindow(const std::string	aBmpFileName)
 														myRenderDc, //hWnd,
 														myPaintMutex, 
 														bindMember(this, &ModelWindow::invalidateRect)));
-	//mySettingsDlg = SHARED_PTR(SettingsDialog)(new SettingsDialog(hWnd));
+	mySettingsDlg = SHARED_PTR(SettingsDialog)(new SettingsDialog(hWnd));
 }
 
 ModelWindow::~ModelWindow(void)
@@ -106,7 +106,7 @@ LRESULT ModelWindow::wndProc(UINT Msg, WPARAM wParam, LPARAM lParam) {
 		
 		break;*/
 	case WM_RBUTTONUP:
-		//mySettingsDlg->show();
+		mySettingsDlg->show();
 		break;
     case WM_DESTROY:
         PostQuitMessage(WM_QUIT);
