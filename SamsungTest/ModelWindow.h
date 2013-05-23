@@ -9,7 +9,6 @@
 
 #include "rl_ptr.h"
 #include "BasicDefs.h"
-#include "Mutex.h"
 
 class SettingsDialog;
 class ShockwaveRenderer;

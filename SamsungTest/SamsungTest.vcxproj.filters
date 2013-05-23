@@ -30,12 +30,6 @@
     <ClCompile Include="ModelWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mutex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MutexLock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SamsungTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -84,12 +78,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ModelWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mutex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MutexLock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

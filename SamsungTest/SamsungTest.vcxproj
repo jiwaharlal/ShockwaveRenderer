@@ -85,6 +85,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>C:\libs\SDL-1.2.15\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -93,6 +94,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>false</Profile>
+      <AdditionalLibraryDirectories>C:\libs\SDL-1.2.15\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL.lib;SDLmain.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -101,8 +104,6 @@
     <ClCompile Include="Blast.cpp" />
     <ClCompile Include="ModelClock.cpp" />
     <ClCompile Include="ModelWindow.cpp" />
-    <ClCompile Include="Mutex.cpp" />
-    <ClCompile Include="MutexLock.cpp" />
     <ClCompile Include="SamsungTest.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="SettingsDialog.cpp" />
@@ -121,8 +122,6 @@
     <ClInclude Include="Blast.h" />
     <ClInclude Include="ModelClock.h" />
     <ClInclude Include="ModelWindow.h" />
-    <ClInclude Include="Mutex.h" />
-    <ClInclude Include="MutexLock.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="rl_ptr.h" />
     <ClInclude Include="Settings.h" />

@@ -1,5 +1,4 @@
 #include "ModelWindow.h"
-#include "MutexLock.h"
 
 #include "BindMember.h"
 #include "ShockwaveRenderer.h"

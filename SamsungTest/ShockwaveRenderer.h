@@ -4,9 +4,9 @@
 #include <thread>
 #include <functional>
 #include <mutex>
+#include <Windows.h>
 
 #include "BindMember.h"
-#include "Mutex.h"
 
 class AnimatedSprite;
 class Shockwave;
@@ -25,7 +25,6 @@ private:
 	Functor<void, const RECT*>		myInvalidationCallback;
 	std::string						myBmpFileName;
 	HDC								myTargetDc;
-	Mutex							myPaintMutex;
 	Functor<std::mutex&, int>		myGetPaintMutexCallback;
 
 	static void						renderThread(ShockwaveRenderer* aRenderer);

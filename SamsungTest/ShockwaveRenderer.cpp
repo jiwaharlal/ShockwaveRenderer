@@ -4,7 +4,6 @@
 #include "ModelClock.h"
 #include "BasicDefs.h"
 #include "ShockwaveCalculator.h"
-#include "MutexLock.h"
 #include "Sprite.h"
 #include "Bitmap.h"
 #include "Blast.h"

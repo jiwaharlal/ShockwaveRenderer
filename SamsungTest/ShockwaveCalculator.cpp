@@ -6,7 +6,6 @@
 #include <list>
 #include <memory>
 
-#include "MutexLock.h"
 #include "ModelClock.h"
 #include "Settings.h"
 #include "Bitmap.h"
@@ -16,13 +15,6 @@
 #define max(x, y) std::max(x, y);
 #endif
 
-ShockwaveCalculator::CalculationTask::CalculationTask( int aYMin, int aYMax, const Mutex& aMutex )
-	: yMin(aYMin)
-	, yMax(aYMax)
-	, mutex(aMutex)
-	, isDone(false)
-{}
-
 ShockwaveCalculator::ShockwaveCalculator(
 	SHARED_PTR(Bitmap)	aSrcBitmap,
 	SHARED_PTR(Bitmap)	aDestBitmap )
@@ -30,24 +22,10 @@ ShockwaveCalculator::ShockwaveCalculator(
 	, myDestBitmap(aDestBitmap)
 {
 	myIsMultithreaded = Settings::instance().isMultithreaded();
-	//if (! myIsMultithreaded ) {
-		return;
-	//}
-	int threadCount = Settings::instance().getThreadCount();
-	for (int i = 0; i < threadCount; i++) {
-		myThreads.push_back(CreateThread(NULL, 0, workerThreadStart, this, 0, NULL));
-	}
 }
 
 ShockwaveCalculator::~ShockwaveCalculator(void)
 {
-	if (! myIsMultithreaded ) {
-		return;
-	}
-	for (ThreadStorage::iterator it = myThreads.begin(); it != myThreads.end(); ++it) {
-		TerminateThread(*it, 0);
-	}
-	MutexLock lock(myTaskListMutex.handle());
 }
 
 float waveFunc(float x, float amplitude) 
@@ -81,82 +59,11 @@ ShockwaveCalculator::calculateShockwave(
 
 		for (int yLow = yMin, yHigh = yLow + 20; yHigh < yMax; yLow = yHigh, yHigh += 20) {
 			jobs.push_back(ThreadPool::instance().addJob(std::bind(&ShockwaveCalculator::calculateForYRange, this, yLow, yHigh)));
-			//myTasks.push_back(CalculationTask(yLow, yHigh, Mutex()));
 		}
 
 		for (auto& j: jobs)
 		{
 			j->waitForCompletion();
-		}
-
-		/*{
-			MutexLock listLock(myTaskListMutex.handle());
-			myTasks.clear();
-			for (int yLow = yMin, yHigh = yLow + 20; yHigh < yMax; yLow = yHigh, yHigh += 20) {
-				myTasks.push_back(CalculationTask(yLow, yHigh, Mutex()));
-			}
-		}
-		
-		while(true) {
-			{
-				MutexLock listLock(myTaskListMutex.handle());
-
-				TaskStorage::iterator it;
-				for (it = myTasks.begin(); it != myTasks.end(); ++it) {
-					if ( WaitForSingleObject(it->mutex.handle(), 0) != WAIT_OBJECT_0 ) {
-						continue;
-					}
-					ReleaseMutex(it->mutex.handle());
-					if ( it->isDone ) {
-						it = myTasks.erase(it);
-						
-						if (it == myTasks.end()) {
-							break;
-						}
-					}
-				}
-				if ( myTasks.empty() ) {
-					break;
-				}
-			}
-		}*/
-	}
-}
-
-DWORD WINAPI
-ShockwaveCalculator::workerThreadStart( LPVOID			aParam )
-{
-	static_cast<ShockwaveCalculator*>(aParam)->workerThreadFunc();
-	return 0;
-}
-
-void
-ShockwaveCalculator::workerThreadFunc()
-{
-	while (true)
-	{
-		CalculationTask* task = NULL;
-
-		{
-			MutexLock listLock(myTaskListMutex.handle());
-			
-			for (TaskStorage::iterator it = myTasks.begin(); it != myTasks.end(); ++it)
-			{
-				if (WaitForSingleObject(it->mutex.handle(), 0) != WAIT_OBJECT_0) {
-					continue;
-				}
-				if (! it->isDone ) {
-					task = &(*it);
-					break;
-				}
-				ReleaseMutex(it->mutex.handle());
-			}
-		}
-
-		if (task != NULL) {
-			calculateForYRange(task->yMin, task->yMax);
-			task->isDone = true;
-			ReleaseMutex(task->mutex.handle());
 		}
 	}
 }

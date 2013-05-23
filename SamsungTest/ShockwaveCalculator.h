@@ -8,7 +8,6 @@
 #include <list>
 
 #include "BasicDefs.h"
-#include "Mutex.h"
 
 //namespace sw {
 
@@ -26,33 +25,10 @@ public:
 									unsigned int	aXCenter,
 									unsigned int	aYCenter );
 private:
-	struct CalculationTask 
-	{
-		CalculationTask( int aYMin, int aYMax, const Mutex& aMutex );
-
-		int							yMin;
-		int							yMax;
-		Mutex						mutex;
-		bool						isDone;
-	};
-
 	SHARED_PTR(Bitmap)	mySrcBitmap;
 	SHARED_PTR(Bitmap)	myDestBitmap;
 
-	/*RGB*				myOriginalPixels;
-	RGB*				myResultPixels;
-	unsigned int		myImageHeight;
-	unsigned int		myImageWidth;
-	*/
-
 	bool				myIsMultithreaded;
-
-	typedef std::vector<HANDLE> ThreadStorage;
-	ThreadStorage		myThreads;
-
-	typedef std::list<CalculationTask> TaskStorage;
-	TaskStorage			myTasks;
-	Mutex				myTaskListMutex;
 
 	float				myAmplitude;
 	float				myOutsideRadix;

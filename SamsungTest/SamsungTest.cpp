@@ -12,7 +12,6 @@
 #include <math.h>
 #include "ModelClock.h"
 #include "BasicDefs.h"
-#include "MutexLock.h"
 #include "SettingsDialog.h"
 
 #include <SDL.h>
