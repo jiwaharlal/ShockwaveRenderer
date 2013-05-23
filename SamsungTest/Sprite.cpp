@@ -3,7 +3,12 @@
 #include "ModelClock.h"
 #include "Bitmap.h"
 #include "BitmapProvider.h"
+#include "ThreadPool.h"
 
+#include <memory>
+#include <functional>
+#include <iostream>
+#include <list>
 //namespace sw {
 
 AnimatedSprite::AnimatedSprite(
@@ -70,14 +75,47 @@ AnimatedSprite::render(
 	if (frameIndex >= getFrameCount()) {
 		return;
 	}
-	ASSERT(frameIndex < getFrameCount(), "Frame out of sprite bounds");
+	ASSERT(frameIndex < getFrameCount(), "Frame is out of sprite bounds");
 	int framesPerRow = myBitmap->getWidth() / myFrameWidth;
 	int frameRow = frameIndex / framesPerRow;
 	int frameCol = frameIndex % framesPerRow;
 	int leftBottomX = frameCol * myFrameWidth;
 	int leftBottomY = myBitmap->getHeight() - (frameRow + 1) * myFrameHeight;
 
-	for (int row = 0; row < myFrameHeight; row++)
+	std::list<std::shared_ptr<Job> > jobs;
+
+	int heightStep = 15;
+	for (int hi = heightStep, lo = 0; hi < myFrameHeight; lo = hi, hi += heightStep)
+	{
+		if (hi > myFrameHeight)
+		{
+			hi = myFrameHeight;
+		}
+
+		jobs.push_back(ThreadPool::instance().addJob(std::bind(
+			[&](int low, int high)
+			{
+				for (int row = low; row < high; row++)
+				{
+					for (int col = 0; col < myFrameWidth; col++)
+					{
+						const RGB& pixel = myBitmap->getPixel(leftBottomX + col, leftBottomY + row);
+						if (pixel.Red + pixel.Green + pixel.Blue < 150) {
+							continue;
+						}
+						aTargetBitmap->setPixel(aX + col - myBaseX, aY + row - myBaseY, pixel);
+					}
+				}
+			},
+			lo,
+			hi)));
+	}
+	
+	for (auto& j: jobs)
+	{
+		j->waitForCompletion();
+	}
+	/*for (int row = 0; row < myFrameHeight; row++)
 	{
 		for (int col = 0; col < myFrameWidth; col++)
 		{
@@ -87,7 +125,7 @@ AnimatedSprite::render(
 			}
 			aTargetBitmap->setPixel(aX + col - myBaseX, aY + row - myBaseY, pixel);
 		}
-	}
+	}*/
 
 	defineRedrawRect(aX, aY, aOutRedrawRect);
 }
@@ -123,6 +161,44 @@ AnimatedSprite::erasePreviousFrame(
 	int leftBottomX = frameCol * myFrameWidth;
 	int leftBottomY = myBitmap->getHeight() - (frameRow + 1) * myFrameHeight;
 
+	std::list<std::shared_ptr<Job> > jobs;
+
+	int heightStep = 15;
+	for (int hi = heightStep, lo = 0; hi < myFrameHeight; lo = hi, hi += heightStep)
+	{
+		if (hi > myFrameHeight)
+		{
+			hi = myFrameHeight;
+		}
+
+		jobs.push_back(ThreadPool::instance().addJob(std::bind(
+			[&](int low, int high)
+			{
+				for (int row = low; row < high; row++)
+				{
+					for (int col = 0; col < myFrameWidth; col++)
+					{
+						const RGB& spritePixel = myBitmap->getPixel(leftBottomX + col, leftBottomY + row);
+						if (spritePixel.Red + spritePixel.Green + spritePixel.Blue < 150) 
+						{
+							continue;
+						}
+						int x = aX + col - myBaseX;
+						int y = aY + row - myBaseY;
+						aDestBitmap->setPixel(x, y, aSrcBitmap->getPixel(x, y));
+					}
+				}
+			},
+			lo,
+			hi)));
+	}
+	
+	for (auto& j: jobs)
+	{
+		j->waitForCompletion();
+	}
+
+	/*
 	for (int row = 0; row < myFrameHeight; row++)
 	{
 		for (int col = 0; col < myFrameWidth; col++)
@@ -134,13 +210,9 @@ AnimatedSprite::erasePreviousFrame(
 			}
 			int x = aX + col - myBaseX;
 			int y = aY + row - myBaseY;
-			//const RGB& prevPixel = aDestBitmap->getPixel(x, y);
-			//if (spritePixel == prevPixel) 
-			//{
-				aDestBitmap->setPixel(x, y, aSrcBitmap->getPixel(x, y));
-			//}
+			aDestBitmap->setPixel(x, y, aSrcBitmap->getPixel(x, y));
 		}
-	}
+	}*/
 
 	defineRedrawRect(aX, aY, aOutRedrawRect);
 }
