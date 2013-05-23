@@ -9,29 +9,33 @@
 #include "Bitmap.h"
 #include "Blast.h"
 
+using namespace std;
+
 ShockwaveRenderer::ShockwaveRenderer(
-	const std::string&			aBmpFileName,
-	HDC							aTargetDc,
-	const Mutex&				aPaintMutex,
-	const Functor<const RECT*>	aInvalidationCallback)
-	: myPaintMutex(aPaintMutex)
+	const std::string&				aBmpFileName,
+	HDC								aTargetDc,
+	const Functor<std::mutex&, int>&		aGetPaintMutexCallback,
+	const Functor<void, const RECT*>&		aInvalidationCallback)
+	: myGetPaintMutexCallback(aGetPaintMutexCallback)
 	, myTargetDc(aTargetDc)
 	, myBmpFileName(aBmpFileName)
 	, myInvalidationCallback(aInvalidationCallback)
+	, myIsStopRender(0)
+	, myRenderThread(renderThread, this)
 {
-	//myTargetDc = CreateCompatibleDC(GetDC(NULL));
-	CreateThread(NULL, 0, renderThread, this, 0, NULL);
 }
 
 ShockwaveRenderer::~ShockwaveRenderer(void)
 {
+	InterlockedExchange(&myIsStopRender, 1);
+	myRenderThread.join();
 }
 
-DWORD WINAPI
-ShockwaveRenderer::renderThread(LPVOID aParam)
+void
+ShockwaveRenderer::renderThread(ShockwaveRenderer* aRenderer)
 {
-	static_cast<ShockwaveRenderer*>(aParam)->renderShockwaves();
-	return 0;
+	aRenderer->renderShockwaves();
+	return; // 0;
 }
 
 void
@@ -49,7 +53,7 @@ ShockwaveRenderer::renderShockwaves()
 	SHARED_PTR(Bitmap) srcBitmap(new Bitmap(myBmpFileName));
 
 	{
-		MutexLock lock(myPaintMutex.handle());
+		lock_guard<mutex> lk(myGetPaintMutexCallback(1));
 		srcBitmap->copyPixelsToDevice(myTargetDc);
 	}
 
@@ -64,7 +68,8 @@ ShockwaveRenderer::renderShockwaves()
 
 	long long prevSeconds = static_cast<long long>(nextBlastTime);
 	int frameCounter = 0;
-	while (true) {
+	while ( ! InterlockedExchange(&myIsStopRender, 0)) 
+	{
 		double curTime = clock.getTime();
 		
 		frameCounter++;
@@ -137,7 +142,7 @@ ShockwaveRenderer::renderShockwaves()
 
 		int bmpHeight = destBitmap->getHeight();
 		{
-			MutexLock lock(myPaintMutex.handle());
+			lock_guard<mutex> lk(myGetPaintMutexCallback(1));
 			destBitmap->copyPixelsToDevice(myTargetDc);
 			/*destBitmap->copyPixelsToDevice(
 								myTargetDc, 

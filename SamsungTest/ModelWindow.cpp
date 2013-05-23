@@ -60,8 +60,8 @@ ModelWindow::ModelWindow(const std::string	aBmpFileName)
 
 	myRenderer = koki::rl_ptr<ShockwaveRenderer>(new ShockwaveRenderer(
 														aBmpFileName, 
-														myRenderDc, //hWnd,
-														myPaintMutex, 
+														myRenderDc,
+														bindMember(this, &ModelWindow::getPaintMutex),
 														bindMember(this, &ModelWindow::invalidateRect)));
 	mySettingsDlg = SHARED_PTR(SettingsDialog)(new SettingsDialog(hWnd));
 }
@@ -74,6 +74,12 @@ ModelWindow::~ModelWindow(void)
 	}
 }
 
+std::mutex&
+ModelWindow::getPaintMutex(int i)
+{
+	return myPaintMutex;
+}
+
 HWND ModelWindow::getHandle()
 {
 	return hWnd;
@@ -82,11 +88,6 @@ HWND ModelWindow::getHandle()
 void ModelWindow::invalidateRect(const RECT* aRect)
 {
 	InvalidateRect(hWnd, aRect, false);
-}
-
-const Mutex& ModelWindow::getPaintMutex()
-{
-	return myPaintMutex;
 }
 
 // select target window between class instances and call it's wndProc
@@ -123,7 +124,7 @@ LRESULT ModelWindow::wndProc(UINT Msg, WPARAM wParam, LPARAM lParam) {
 		GetClientRect(hWnd, &r);
 		hdc = BeginPaint(hWnd, &ps);
 		{
-			MutexLock lock(myPaintMutex.handle());
+			std::lock_guard<std::mutex> lk(myPaintMutex);
 			BitBlt(hdc, 0, 0, r.right, r.bottom, myRenderDc, 0, 0, SRCCOPY);
 		}
 		EndPaint(hWnd, &ps);

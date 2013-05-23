@@ -15,12 +15,31 @@ Mutex::Mutex(const Mutex& other)
 
 Mutex::~Mutex(void)
 {
+	decreaseCopyCount();
+}
+
+const Mutex&
+Mutex::operator=(
+	const Mutex& other)
+{
+	decreaseCopyCount();
+	myCopyCounter = other.myCopyCounter;
+	++(*myCopyCounter);
+	myMutex = other.myMutex;
+
+	return *this;
+}
+
+void
+Mutex::decreaseCopyCount()
+{
 	(*myCopyCounter)--;
 	if (*myCopyCounter == 0) {
 		delete myCopyCounter;
 		CloseHandle(myMutex);
 	}
 }
+
 
 HANDLE 
 Mutex::handle() const

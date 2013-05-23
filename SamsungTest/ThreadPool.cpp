@@ -75,7 +75,10 @@ ThreadPool::stop()
 	myJobPresentCondition.notify_all();
 	for (auto& t: myThreads)
 	{
-        t.join();
+        if (t.joinable())
+		{
+			t.join();
+		}
 	}
 }
 

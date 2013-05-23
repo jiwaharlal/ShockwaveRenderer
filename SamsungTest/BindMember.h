@@ -4,52 +4,52 @@
 
 #include "rl_ptr.h"
 
-template <class T> class Functor;
+template <class ReturnType, class ValueType> class Functor;
 
-template <class ValueType>
+template <class ReturnType, class ValueType>
 class AFunctor
 {
-	friend class Functor<ValueType>;
+	friend class Functor<ReturnType, ValueType>;
 public:
 	virtual ~AFunctor() {};
-	void operator () (ValueType aValue) {
-		Call(aValue);
+	ReturnType operator () (ValueType aValue) {
+		return Call(aValue);
 	}
 protected:
-	virtual void Call(ValueType) = 0;
+	virtual ReturnType Call(ValueType) = 0;
 };
 
-template <class ClassType, class ValueType>
-class MemberFunctorImpl: public AFunctor<ValueType>
+template <class ClassType, class ReturnType, class ValueType>
+class MemberFunctorImpl: public AFunctor<ReturnType, ValueType>
 {
-	typedef void (ClassType::*FuncType)(ValueType);
+	typedef ReturnType (ClassType::*FuncType)(ValueType);
 public:
 	MemberFunctorImpl(ClassType* aObject, FuncType aFunc)
 		: myObject(aObject), myFunc(aFunc)
 	{}
 protected:
-	virtual void Call(ValueType value)
+	virtual ReturnType Call(ValueType value)
 	{
-		(myObject->*myFunc)(value);
+		return (myObject->*myFunc)(value);
 	}
 private:
 	ClassType* myObject;
 	FuncType myFunc;
 };
 
-template <class ValueType>
+template <class ReturnType, class ValueType>
 class Functor {
 public:
-	Functor(AFunctor<ValueType>* aFunctorImpl) : myFunctorImpl(aFunctorImpl) {}
+	Functor(AFunctor<ReturnType, ValueType>* aFunctorImpl) : myFunctorImpl(aFunctorImpl) {}
 	~Functor() {}
-	void operator () (ValueType value) {
-		myFunctorImpl->Call(value);
+	ReturnType operator () (ValueType value) {
+		return myFunctorImpl->Call(value);
 	}
 private:
-	koki::rl_ptr<AFunctor<ValueType> > myFunctorImpl;
+	koki::rl_ptr<AFunctor<ReturnType, ValueType> > myFunctorImpl;
 };
 
-template <class ClassType, class ValueType>
-Functor<ValueType> bindMember(ClassType* aObject, void (ClassType::*aFunc)(ValueType)) {
-	return Functor<ValueType>(new MemberFunctorImpl<ClassType, ValueType>(aObject, aFunc));
+template <class ClassType, class ReturnType, class ValueType>
+Functor<ReturnType, ValueType> bindMember(ClassType* aObject, ReturnType (ClassType::*aFunc)(ValueType)) {
+	return Functor<ReturnType, ValueType>(new MemberFunctorImpl<ClassType, ReturnType, ValueType>(aObject, aFunc));
 }

@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <exception>
+#include <mutex>
 #include <Windows.h>
 
 #include "rl_ptr.h"
@@ -27,19 +28,18 @@ public:
 								LPARAM					lParam);
 
 	HWND getHandle();
-
-	const Mutex&		getPaintMutex();
 private:
 	static WndStorage	windows;
 
 	HWND							hWnd;
 	HDC								myRenderDc;
-	Mutex							myPaintMutex;
-	koki::rl_ptr<ShockwaveRenderer> myRenderer;
-//	koki::rl_ptr<SettingsDialog>	mySettingsDlg;
+	std::mutex						myPaintMutex;
+	SHARED_PTR(ShockwaveRenderer)	myRenderer;
 	SHARED_PTR(SettingsDialog)		mySettingsDlg;
 
 	void						invalidateRect(const RECT*	aRect);
+
+	std::mutex&					getPaintMutex(int i);
 
 	static LRESULT CALLBACK		clsWndProc(HWND				hWnd, 
 											UINT			Msg, 
